@@ -6,12 +6,24 @@ if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
   document.body.classList.add("dark");
 }
 
+function updateThemeIcon() {
+  const isDark = document.body.classList.contains("dark");
+  themeButton.textContent = isDark ? "☀" : "☾";
+  themeButton.setAttribute(
+    "aria-label",
+    isDark ? "Switch to light mode" : "Switch to dark mode"
+  );
+}
+
+updateThemeIcon();
+
 themeButton.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   localStorage.setItem(
     "theme",
     document.body.classList.contains("dark") ? "dark" : "light"
   );
+  updateThemeIcon();
 });
 
 document.querySelector("#year").textContent = new Date().getFullYear();

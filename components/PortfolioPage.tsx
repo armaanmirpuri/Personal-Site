@@ -148,27 +148,34 @@ function sectionId(item: string) {
 }
 
 function ThemeToggle() {
-  useEffect(() => {
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
     const stored = window.localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const enabled = stored ? stored === "dark" : prefersDark;
-    document.documentElement.classList.toggle("dark", enabled);
-  }, []);
+    return stored ? stored === "dark" : prefersDark;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
 
   function toggle() {
-    const next = !document.documentElement.classList.contains("dark");
-    document.documentElement.classList.toggle("dark", next);
+    const next = !isDark;
     window.localStorage.setItem("theme", next ? "dark" : "light");
+    setIsDark(next);
   }
 
   return (
     <button
-      aria-label="Toggle dark mode"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={toggle}
-      className="rounded-full border border-ink/15 px-3 py-2 text-sm font-semibold text-ink transition hover:border-ink/35 dark:border-white/20 dark:text-paper dark:hover:border-white/45"
+      className="grid h-10 w-10 place-items-center rounded-full border border-ink/15 text-lg font-semibold text-ink transition hover:border-ink/35 dark:border-white/20 dark:text-paper dark:hover:border-white/45"
       type="button"
     >
-      Theme
+      <span aria-hidden="true">{isDark ? "☀" : "☾"}</span>
     </button>
   );
 }
@@ -261,9 +268,6 @@ export default function PortfolioPage() {
     <main>
       <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/85 backdrop-blur-xl dark:border-white/10 dark:bg-[#0d1117]/85">
         <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 pt-4 md:py-4">
-          <a href="#home" className="text-base font-black tracking-tight">
-            AM
-          </a>
           <div className="hidden items-center gap-5 text-sm font-semibold md:flex">
             {navItems.map((item) => (
               <a
@@ -295,9 +299,6 @@ export default function PortfolioPage() {
         className="mx-auto grid min-h-[calc(100vh-73px)] max-w-6xl items-center gap-10 px-5 py-14 md:grid-cols-[1.05fr_0.95fr]"
       >
         <div className="animate-rise">
-          <p className="mb-4 text-sm font-bold uppercase tracking-[0.22em] text-emerald-700 dark:text-emerald-300">
-            Business analytics student. Independent trader. Still building.
-          </p>
           <h1 className="max-w-3xl text-5xl font-black leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
             Hi, I&apos;m Armaan.
           </h1>
@@ -317,7 +318,7 @@ export default function PortfolioPage() {
               href="#trading"
               className="rounded-lg bg-ink px-5 py-3 font-semibold text-paper transition hover:translate-y-[-1px] dark:bg-paper dark:text-ink"
             >
-              Trading Philosophy
+              Trading
             </a>
             <a
               href={resumeUrl}
@@ -358,12 +359,7 @@ export default function PortfolioPage() {
       >
         <div className="mx-auto grid max-w-6xl gap-10 px-5 md:grid-cols-[0.85fr_1.15fr]">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-              About
-            </p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">
-              The short version
-            </h2>
+            <h2 className="text-4xl font-black tracking-tight">About</h2>
           </div>
           <div className="space-y-5 text-lg leading-8 text-ink/70 dark:text-paper/70">
             <p>
@@ -394,12 +390,7 @@ export default function PortfolioPage() {
 
       <section id="trading" className="mx-auto max-w-6xl px-5 py-20">
         <div className="mb-10 max-w-3xl">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-            Trading
-          </p>
-          <h2 className="mt-3 text-4xl font-black tracking-tight">
-            What trading is teaching me
-          </h2>
+          <h2 className="text-4xl font-black tracking-tight">Trading</h2>
           <p className="mt-4 text-lg leading-8 text-ink/68 dark:text-paper/68">
             I&apos;m still developing as a trader, so I don&apos;t want to
             oversell it. The important part is the mindset: protect capital,
@@ -433,10 +424,7 @@ export default function PortfolioPage() {
         <div className="mx-auto max-w-6xl px-5">
           <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-                Capabilities
-              </p>
-              <h2 className="mt-3 text-4xl font-black tracking-tight">Skills</h2>
+              <h2 className="text-4xl font-black tracking-tight">Skills</h2>
             </div>
             <p className="max-w-xl text-ink/65 dark:text-paper/65">
               A practical mix from school, internships, sales work, and trading.
@@ -467,12 +455,7 @@ export default function PortfolioPage() {
 
       <section id="focus-areas" className="mx-auto max-w-6xl px-5 py-20">
         <div className="mb-10 max-w-3xl">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-            Current Direction
-          </p>
-          <h2 className="mt-3 text-4xl font-black tracking-tight">
-            What I&apos;m working on next
-          </h2>
+          <h2 className="text-4xl font-black tracking-tight">Focus Areas</h2>
           <p className="mt-4 text-lg leading-8 text-ink/68 dark:text-paper/68">
             I don&apos;t have a finished project section yet, and I&apos;m not going to
             pretend I do. These are the areas I&apos;m building toward right now.
@@ -499,12 +482,7 @@ export default function PortfolioPage() {
       >
         <div className="mx-auto max-w-6xl px-5">
           <div className="max-w-3xl">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-              Experience
-            </p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">
-              Real work, not just interests
-            </h2>
+            <h2 className="text-4xl font-black tracking-tight">Experience</h2>
             <p className="mt-4 text-lg leading-8 text-ink/68 dark:text-paper/68">
               My resume is a mix of operations, sales analysis, project support,
               and trading. The common thread is learning how decisions get made
@@ -538,12 +516,7 @@ export default function PortfolioPage() {
       <section id="education" className="mx-auto max-w-6xl px-5 py-20">
         <div className="grid gap-8 md:grid-cols-2">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-              Education
-            </p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">
-              School path
-            </h2>
+            <h2 className="text-4xl font-black tracking-tight">Education</h2>
             <div className="mt-6 grid gap-6">
               {education.map((item) => (
                 <article key={item.school}>
@@ -592,12 +565,7 @@ export default function PortfolioPage() {
         <div className="mx-auto max-w-6xl px-5">
           <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-                Resume
-              </p>
-              <h2 className="mt-3 text-4xl font-black tracking-tight">
-                Resume
-              </h2>
+              <h2 className="text-4xl font-black tracking-tight">Resume</h2>
               <p className="mt-4 max-w-2xl text-lg leading-8 text-ink/68 dark:text-paper/68">
                 This is the same resume I use for internships and professional
                 opportunities. The website gives more context; the PDF keeps it
@@ -637,12 +605,7 @@ export default function PortfolioPage() {
       <section id="contact" className="py-20">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 md:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-              Contact
-            </p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">
-              Reach out for internships, analytics roles, or finance conversations.
-            </h2>
+            <h2 className="text-4xl font-black tracking-tight">Contact</h2>
             <p className="mt-5 max-w-xl text-lg leading-8 text-ink/68 dark:text-paper/68">
               The easiest way to contact me is email. LinkedIn works too if
               you&apos;d rather connect there first.
