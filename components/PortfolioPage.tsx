@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 const email = "armaanmirpuri@gmail.com";
@@ -148,34 +148,38 @@ function sectionId(item: string) {
 }
 
 function ThemeToggle() {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    const stored = window.localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    return stored ? stored === "dark" : prefersDark;
-  });
+  const iconRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDark);
-  }, [isDark]);
+    const stored = window.localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const enabled = stored ? stored === "dark" : prefersDark;
+
+    document.documentElement.classList.toggle("dark", enabled);
+    if (iconRef.current) {
+      iconRef.current.textContent = enabled ? "☀" : "☾";
+    }
+  }, []);
 
   function toggle() {
-    const next = !isDark;
+    const next = !document.documentElement.classList.contains("dark");
     window.localStorage.setItem("theme", next ? "dark" : "light");
-    setIsDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    if (iconRef.current) {
+      iconRef.current.textContent = next ? "☀" : "☾";
+    }
   }
 
   return (
     <button
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label="Toggle color theme"
       onClick={toggle}
       className="grid h-10 w-10 place-items-center rounded-full border border-ink/15 text-lg font-semibold text-ink transition hover:border-ink/35 dark:border-white/20 dark:text-paper dark:hover:border-white/45"
       type="button"
     >
-      <span aria-hidden="true">{isDark ? "☀" : "☾"}</span>
+      <span ref={iconRef} aria-hidden="true" suppressHydrationWarning>
+        ☾
+      </span>
     </button>
   );
 }
